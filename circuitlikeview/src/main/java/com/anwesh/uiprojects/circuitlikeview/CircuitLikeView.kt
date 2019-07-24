@@ -200,4 +200,26 @@ class CircuitLikeView(ctx : Context) : View(ctx) {
             curr.startUpdating(cb)
         }
     }
+
+    data class Renderer(var view : CircuitLikeView) {
+
+        private val animator : Animator = Animator(view)
+        private val cl : CircuitLike = CircuitLike(0)
+
+        fun render(canvas : Canvas, paint : Paint) {
+            canvas.drawColor(backColor)
+            cl.draw(canvas, paint)
+            animator.animate {
+                cl.update {i, scl ->
+                    animator.stop()
+                }
+            }
+        }
+
+        fun handleTap() {
+            cl.startUpdating {
+                animator.start()
+            }
+        }
+    }
 }
