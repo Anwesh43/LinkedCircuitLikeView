@@ -19,7 +19,9 @@ val scDiv : Double = 0.51
 val strokeFactor : Int = 90
 val foreColor : Int = Color.parseColor("#4527A0")
 val backColor : Int = Color.parseColor("#BDBDBD")
+val sizeFactor : Float = 2.9f
 val rotDeg : Float = 90f
+val cFactor : Float = 3f
 
 fun Int.inverse() : Float = 1f / this
 fun Float.scaleFactor() : Float = Math.floor(this / scDiv).toFloat()
@@ -30,3 +32,38 @@ fun Float.mirrorValue(a : Int, b : Int) : Float {
     return (1 - k) * a.inverse() + k * b.inverse()
 }
 fun Float.updateValue(dir : Float, a : Int, b : Int) : Float = mirrorValue(a, b) * dir * scGap
+
+fun Canvas.drawCircuitLine(i : Int, scale : Float, size : Float, paint : Paint) {
+    val sc : Float = scale.divideScale(i, lines)
+    val cSize : Float = size / cFactor
+    save()
+    rotate(rotDeg * i)
+    translate(-size, -size)
+    drawLine(0f, 0f, cSize, 0f, paint)
+    for (j in 0..1) {
+        val y : Float = -cSize * sc.divideScale(j, 2) * (1f - 2 * j)
+        save()
+        scale(1f, 1f - 2 * j)
+        drawLine(cSize, 0f, cSize, y, paint)
+        drawLine(cSize, y, 2 * cSize,y, paint)
+        drawLine(2 * cSize, y, 2 * cSize, 0f, paint)
+        restore()
+    }
+    restore()
+}
+
+fun Canvas.drawCLNode(i : Int, scale : Float, paint : Paint) {
+    val w : Float = width.toFloat()
+    val h : Float = height.toFloat()
+    val gap : Float = w / (nodes + 1)
+    val size :Float = gap / sizeFactor
+    val sc1 : Float = scale.divideScale(0, 2)
+    val sc2 : Float = scale.divideScale(1, 2)
+    save()
+    translate(gap * (i + 1), h / 2)
+    rotate(rotDeg * sc2)
+    for (j in 0..(lines - 1)) {
+        drawCircuitLine(j, sc1, size, paint)
+    }
+    restore()
+}
