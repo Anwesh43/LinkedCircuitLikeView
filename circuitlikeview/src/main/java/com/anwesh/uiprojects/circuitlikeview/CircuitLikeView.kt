@@ -223,4 +223,12 @@ class CircuitLikeView(ctx : Context) : View(ctx) {
             }
         }
     }
+
+    companion object {
+        fun create(activity : Activity) : CircuitLikeView {
+            val view : CircuitLikeView = CircuitLikeView(activity)
+            activity.setContentView(view)
+            return view 
+        }
+    }
 }
