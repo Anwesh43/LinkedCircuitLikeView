@@ -21,7 +21,7 @@ val foreColor : Int = Color.parseColor("#4527A0")
 val backColor : Int = Color.parseColor("#BDBDBD")
 val sizeFactor : Float = 2.9f
 val rotDeg : Float = 90f
-val cFactor : Float = 3f
+val cFactor : Float = 5.6f
 
 fun Int.inverse() : Float = 1f / this
 fun Float.scaleFactor() : Float = Math.floor(this / scDiv).toFloat()
@@ -35,20 +35,21 @@ fun Float.updateValue(dir : Float, a : Int, b : Int) : Float = mirrorValue(a, b)
 
 fun Canvas.drawCircuitLine(i : Int, scale : Float, size : Float, paint : Paint) {
     val sc : Float = scale.divideScale(i, lines)
-    val cSize : Float = size / cFactor
+    val cSize : Float =  (2* size) / 3
+    val kSize : Float = size / cFactor
     save()
     rotate(rotDeg * i)
     translate(-size, -size)
     drawLine(0f, 0f, cSize, 0f, paint)
     for (j in 0..1) {
-        val y : Float = -cSize * sc.divideScale(j, 2) * (1f - 2 * j)
+        val y : Float = -kSize * sc.divideScale(j, 2) * (1f - 2 * j)
         save()
-        scale(1f, 1f - 2 * j)
         drawLine(cSize, 0f, cSize, y, paint)
         drawLine(cSize, y, 2 * cSize,y, paint)
         drawLine(2 * cSize, y, 2 * cSize, 0f, paint)
         restore()
     }
+    drawLine(2 * cSize, 0f, 3 * cSize, 0f, paint)
     restore()
 }
 
@@ -59,6 +60,9 @@ fun Canvas.drawCLNode(i : Int, scale : Float, paint : Paint) {
     val size :Float = gap / sizeFactor
     val sc1 : Float = scale.divideScale(0, 2)
     val sc2 : Float = scale.divideScale(1, 2)
+    paint.color = foreColor
+    paint.strokeCap = Paint.Cap.ROUND
+    paint.strokeWidth = Math.min(w, h) / strokeFactor
     save()
     translate(gap * (i + 1), h / 2)
     rotate(rotDeg * sc2)
@@ -228,7 +232,7 @@ class CircuitLikeView(ctx : Context) : View(ctx) {
         fun create(activity : Activity) : CircuitLikeView {
             val view : CircuitLikeView = CircuitLikeView(activity)
             activity.setContentView(view)
-            return view 
+            return view
         }
     }
 }
